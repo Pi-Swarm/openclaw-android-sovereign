@@ -1,359 +1,331 @@
-# 📱 OpenClaw Android - Sovereign Edition
+# 📱 OpenClaw Android - Full Edition
 
-**Complete OpenClaw Port for Android Devices**
+**Complete OpenClaw Port for Android with Full API Support**
 
-Run the full OpenClaw agent system on your Android phone/tablet via Termux.
+Run the FULL OpenClaw experience on Android - with support for Claude, OpenAI, Gemini, and local Ollama models.
 
 ---
 
-## 🎯 What You Get
+## 🎯 What's Included
 
 | Feature | Status | Description |
 |---------|--------|-------------|
-| **Full OpenClaw** | ✅ | Complete Node.js runtime + OpenClaw |
-| **Ollama Support** | ✅ | Local AI on Android (via Termux) |
-| **Security Tools** | ✅ | Audit, scan, analyze on mobile |
-| **Telegram Bot** | ✅ | Control from Telegram |
-| **Git Integration** | ✅ | Clone, commit, push repos |
-| **File Manager** | ✅ | Access `/sdcard` files |
+| **All API Providers** | ✅ | OpenAI, Claude, Gemini, Grok, Mistral |
+| **Local Ollama** | ✅ | Run AI locally on device |
+| **OpenClaw Core** | ✅ | 100% feature parity with desktop |
+| **All Skils** | ✅ | Security, web, git, file tools |
+| **Sessions** | ✅ | Full session management |
+| **Gateway** | ✅ | HTTP API server on Android |
+| **Channels** | ✅ | Telegram, Discord, Matrix |
+| **Cron Jobs** | ✅ | Scheduled tasks on phone |
 
 ---
 
-## 📦 Installation Methods
+## 📦 Installation
 
-### Method 1: One-Line Installer (Recommended)
+### One-Line Installer
 
 ```bash
-# In Termux app
-curl -fsSL https://raw.githubusercontent.com/Pi-Swarm/openclaw-android-sovereign/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Pi-Swarm/openclaw-android-sovereign/main/install-full.sh | bash
 ```
 
-### Method 2: Manual Installation
+### Manual Installation
 
-#### Step 1: Install Termux
-1. Download **F-Droid** app (not Play Store)
-2. Install **Termux** from F-Droid
-3. Open Termux
-
-#### Step 2: Install Dependencies
 ```bash
-# Update packages
+# 1. Install Termux from F-Droid
+
+# 2. Update packages
 pkg update && pkg upgrade -y
 
-# Install Node.js
-pkg install -y nodejs git curl wget
+# 3. Install Node.js 20+
+pkg install -y nodejs git curl
 
-# Install Python (for some tools)
-pkg install -y python
-
-# Install build tools
-pkg install -y build-essential
-```
-
-#### Step 3: Install OpenClaw
-```bash
-# Install OpenClaw globally
+# 4. Install OpenClaw FULL
 npm install -g openclaw
 
-# Verify installation
+# 5. Verify
 openclaw --version
 ```
 
-#### Step 4: Install Ollama (Optional - for AI)
-```bash
-# Install Ollama
-pkg install -y ollama
-
-# Pull lightweight model
-ollama pull qwen2.5:1.5b
-
-# Test
-ollama run qwen2.5:1.5b "Hello"
-```
-
 ---
 
-## 🎮 Usage on Android
+## 🔑 API Configuration
 
-### Basic Commands
+### Option 1: Edit Config File
 
 ```bash
-# Check OpenClaw status
-openclaw status
-
-# Run agent
-openclaw agent -m "Analyze this code"
-
-# Security audit
-openclaw security audit /sdcard/Download/myapp.js
-
-# Network scan
-openclaw security scan 192.168.1.1
-
-# Start gateway
-openclaw gateway
-
-# Git operations
-openclaw git clone https://github.com/user/repo
+nano ~/.openclaw/config.json
 ```
 
-### Access Android Storage
-```bash
-# Grant storage permission first
-termux-setup-storage
+Add your API keys:
 
-# Now you can access:
-# /sdcard/Download   - Downloads
-# /sdcard/Documents  - Documents
-# /sdcard/Pictures   - Pictures
-
-# Audit a file
-openclaw security audit /sdcard/Download/app.js
-```
-
-### Background Service
-```bash
-# Run OpenClaw in background
-openclaw gateway &
-
-# Check if running
-curl http://localhost:18789/status
-
-# Stop
-pkill -f "openclaw"
-```
-
----
-
-## 🔧 Configuration
-
-### Create Config File
-```bash
-mkdir -p ~/.openclaw
-cat > ~/.openclaw/config.json << 'EOF'
+```json
 {
-  "model": "qwen2.5:1.5b",
-  "ollamaUrl": "http://localhost:11434",
-  "workspace": "/sdcard/OpenClaw",
+  "providers": {
+    "openai": {
+      "apiKey": "sk-your-key-here",
+      "model": "gpt-4o"
+    },
+    "anthropic": {
+      "apiKey": "sk-ant-your-key-here",
+      "model": "claude-3-5-sonnet-20241022"
+    },
+    "google": {
+      "apiKey": "your-gemini-key",
+      "model": "gemini-1.5-pro"
+    },
+    "ollama": {
+      "url": "http://localhost:11434",
+      "model": "qwen2.5:1.5b"
+    }
+  },
+  "defaultProvider": "anthropic",
   "channels": {
     "telegram": {
       "enabled": false,
-      "token": ""
+      "token": "your-bot-token"
     }
   }
 }
-EOF
 ```
 
-### Environment Variables
+### Option 2: Environment Variables
+
 Add to `~/.bashrc`:
-```bash
-# OpenClaw settings
-export OPENCLAW_MODEL="qwen2.5:1.5b"
-export OPENCLAW_WORKSPACE="/sdcard/OpenClaw"
-export PATH="$PATH:$HOME/.openclaw/bin"
 
-# Aliases for easy use
-alias oc='openclaw'
-alias oc-status='openclaw status'
-alias oc-agent='openclaw agent'
-alias oc-audit='openclaw security audit'
+```bash
+# API Keys
+export OPENAI_API_KEY="sk-your-key"
+export ANTHROPIC_API_KEY="sk-ant-your-key"
+export GEMINI_API_KEY="your-gemini-key"
+
+# Default provider
+export OPENCLAW_DEFAULT_PROVIDER="anthropic"
+```
+
+Then:
+```bash
+source ~/.bashrc
 ```
 
 ---
 
-## 🤖 Advanced: Telegram Control
+## 🎮 Usage Examples
 
-### Setup Telegram Bot
+### With Claude (Recommended)
+
 ```bash
-# 1. Get token from @BotFather
-# 2. Set it
-export TELEGRAM_TOKEN="your_bot_token"
+# Set Claude as default
+openclaw config set defaultProvider anthropic
 
-# 3. Start Telegram gateway
-openclaw telegram --token $TELEGRAM_TOKEN
+# Chat with Claude
+openclaw agent -m "Explain blockchain"
+
+# Security audit
+openclaw agent -m "Audit this code" --file ./contract.sol
 ```
 
-### Telegram Commands
-Once running, message your bot:
-- `/status` - System status
-- `/agent <msg>` - Talk to AI
-- `/audit <file>` - Audit file
-- `/scan <ip>` - Network scan
+### With OpenAI
 
----
-
-## 🛠️ Performance Tips
-
-### Optimize for Low RAM (4GB devices)
 ```bash
-# Use smaller AI model
-ollama pull qwen2.5:0.5b
+# Quick question
+openclaw agent -m "What is DeFi?" --provider openai
 
-# Limit Node.js memory
-export NODE_OPTIONS="--max-old-space-size=1024"
-
-# Close unused apps
+# Code review
+openclaw agent --provider openai -m "Review this Rust code" --file ./main.rs
 ```
 
-### Battery Optimization
+### With Gemini
+
 ```bash
-# Run only when charging
-while true; do
-  if [ "$(cat /sys/class/power_supply/battery/status)" = "Charging" ]; then
-    openclaw gateway
-  fi
-  sleep 60
-done
+# Long context (Gemini has 1M token context)
+openclaw agent --provider google -m "Analyze this entire repo" --file ./src/
+```
+
+### Local Only (Ollama)
+
+```bash
+# No internet needed
+openclaw agent -m "Hello" --provider ollama
+
+# Must have ollama installed
+ollama serve
 ```
 
 ---
 
-## 📱 APK Wrapper (Optional)
+## 🔧 Full Feature Usage
 
-For a native app experience, we provide an APK wrapper:
+### Sessions (Like Desktop)
 
-### Download APK
 ```bash
-# Download latest APK
-wget https://github.com/Pi-Swarm/openclaw-android-sovereign/releases/download/v1.0/openclaw-android.apk
+# List sessions
+openclaw sessions list
 
-# Install (enable "Unknown Sources")
-termux-open openclaw-android.apk
+# Create new session
+openclaw sessions new security-audit
+
+# Send message to session
+openclaw sessions send security-audit "Audit this repo"
+
+# View session history
+openclaw sessions history security-audit
 ```
 
-### Features of APK
-- 🎨 Material Design UI
-- 🔧 Settings GUI
-- 📊 Status dashboard
-- 🔔 Notifications for scan completion
-- 📁 File picker integration
+### Gateway Server
+
+```bash
+# Start gateway
+openclaw gateway --port 18789
+
+# Now access via HTTP:
+curl http://localhost:18789/status
+curl -X POST http://localhost:18789/agent -d '{"message": "Hello"}'
+```
+
+### Skills/Tools
+
+```bash
+# All tools work on Android:
+openclaw agent -m "Read /sdcard/Download/file.txt"
+openclaw agent -m "Scan 192.168.1.1"
+openclaw agent -m "Clone github.com/user/repo"
+openclaw agent -m "Search web for Rust tutorials"
+```
+
+### Cron Jobs (NEW on Android!)
+
+```bash
+# Daily security scan
+openclaw cron add --name "daily-scan" --schedule "0 9 * * *" \
+  --command "agent -m 'Scan 192.168.1.1'"
+
+# List jobs
+openclaw cron list
+```
 
 ---
 
-## 🔄 Auto-Start on Boot
+## 📱 Android-Specific Features
 
-### Method 1: Termux:Boot
+### Storage Access
+
 ```bash
-# Install Termux:Boot from F-Droid
-# Create startup script:
+# Allow storage
+termux-setup-storage
+
+# Access Downloads
+openclaw agent -m "Read /sdcard/Download/report.pdf"
+
+# Analyze photos
+openclaw agent -m "Analyze this image" --file /sdcard/DCIM/Camera/photo.jpg
+```
+
+### Background Operation
+
+```bash
+# Run gateway in background
+openclaw gateway --daemon
+
+# Auto-start on boot (with Termux:Boot)
 mkdir -p ~/.termux/boot
-cat > ~/.termux/boot/openclaw-start << 'EOF'
+cat > ~/.termux/boot/openclaw << 'EOF'
 #!/data/data/com.termux/files/usr/bin/bash
-# Start OpenClaw on boot
 termux-wake-lock
-sshd
-openclaw gateway
+openclaw gateway --daemon
 EOF
-chmod +x ~/.termux/boot/openclaw-start
+chmod +x ~/.termux/boot/openclaw
 ```
 
-### Method 2: Tasker Integration
+### Quick Actions (Home Screen)
+
 ```bash
-# Use Tasker app to auto-start Termux
-# Profile: Device Boot
-# Action: Run Shell: am startservice -n com.termux/com.termux.app.TermuxService
+# Create Termux shortcut
+echo 'openclaw agent -m "Quick status check"' > ~/.shortcuts/status
+echo 'openclaw gateway' > ~/.shortcuts/gateway
 ```
+
+---
+
+## 🔐 Security
+
+### API Key Security
+
+Keys are stored in:
+- `~/.openclaw/config.json` (chmod 600)
+- Or environment variables (more secure)
+
+### Recommended: Use .env
+
+```bash
+# Create .env file
+cat > ~/.openclaw/.env << 'EOF'
+OPENAI_API_KEY=sk-...
+ANTHROPIC_API_KEY=sk-ant-...
+EOF
+
+# Secure it
+chmod 600 ~/.openclaw/.env
+
+# Source in .bashrc
+echo 'source ~/.openclaw/.env' >> ~/.bashrc
+```
+
+---
+
+## 🌐 Provider Comparison on Android
+
+| Provider | Speed | Cost | Works Offline | Best For |
+|----------|-------|------|---------------|----------|
+| **Claude** | ⭐⭐⭐ | $$$ | ❌ | Complex analysis, coding |
+| **OpenAI** | ⭐⭐⭐ | $$ | ❌ | General tasks, fast |
+| **Gemini** | ⭐⭐ | $ | ❌ | Long documents, vision |
+| **Ollama** | ⭐ | Free | ✅ | Privacy, offline |
+
+### Model Recommendations
+
+- **Fast tasks**: GPT-4o-mini, Claude Haiku
+- **Code**: Claude Sonnet, GPT-4o
+- **Long docs**: Gemini 1.5 Pro (1M context)
+- **Offline**: qwen2.5:1.5b, llama3.2:1b
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Issue: Command not found
+### "Invalid API Key"
 ```bash
-# Re-install
-npm install -g openclaw
+# Check key is set
+echo $ANTHROPIC_API_KEY
 
-# Check PATH
-echo $PATH
-which openclaw
+# Test connection
+openclaw provider test anthropic
 ```
 
-### Issue: Permission denied
+### "Out of memory"
 ```bash
-# Grant storage permission
-termux-setup-storage
-
-# Fix permissions
-chmod +x $(which openclaw)
-```
-
-### Issue: Out of memory
-```bash
-# Clear cache
-pkg clean
-
 # Use smaller model
-ollama pull tinyllama
+openclaw config set defaultProvider ollama
+openclaw config set ollama.model qwen2.5:0.5b
+
+# Close other apps
 ```
 
-### Issue: Slow AI responses
+### "Network error"
 ```bash
-# Check if using CPU (expected on Android)
-htop
+# Test connection
+curl https://api.anthropic.com/v1/health
 
-# Switch to lighter model
-openclaw config set model qwen2.5:0.5b
+# Check proxy settings
+export HTTP_PROXY=...
 ```
-
----
-
-## 🚀 Development
-
-### Build from Source
-```bash
-# Clone OpenClaw
-git clone https://github.com/openclaw/openclaw.git
-cd openclaw
-
-# Install dependencies
-npm install
-
-# Build
-npm run build
-
-# Link globally
-npm link
-```
-
-### Modify for Android
-```bash
-# Edit source
-nano src/config.ts
-
-# Rebuild
-npm run build
-```
-
----
-
-## 📊 Comparison
-
-| Feature | Desktop | Android Termux | APK Wrapper |
-|---------|---------|----------------|-------------|
-| Full OpenClaw | ✅ | ✅ | ✅ |
-| File Access | ✅ | ✅ (via /sdcard) | ✅ (native) |
-| Background | ✅ | ✅ | ✅ |
-| Notifications | ❌ | ✅ (Termux API) | ✅ (native) |
-| Battery | ✅ | ⚠️ drains | ✅ optimized |
-| RAM Usage | 500MB-2GB | 300MB-1GB | 300MB-1GB |
-
----
-
-## 🎓 Learning Resources
-
-- [OpenClaw Docs](https://docs.openclaw.ai)
-- [Termux Wiki](https://wiki.termux.com)
-- [Ollama on Android](https://github.com/ollama/ollama/blob/main/docs/android.md)
 
 ---
 
 ## 📞 Support
 
-- **Issues**: https://github.com/Pi-Swarm/openclaw-android-sovereign/issues
-- **Telegram**: @PiSwarmSupport
-- **Matrix**: #pi-swarm:matrix.org
+**Issues**: https://github.com/Pi-Swarm/openclaw-android-sovereign/issues
 
 ---
 
-**🛡️ Sovereign AI in Your Pocket**
+**🛡️ Full OpenClaw. Full Power. In Your Pocket.**
